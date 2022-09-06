@@ -1,0 +1,26 @@
+name: 'NFS mount'
+description: 'Mount NFS directory'
+inputs:
+  dest_dir:
+    description: 'Mount directory. ex:/mnt/nfs'
+    required: true
+    default: '/mnt/nfs'
+  source_dir:
+    description: 'expoterd NFS directory with host ip address. ex:10.0.0.1:/exports'
+    required: true
+  mount_options:
+    description: '-o option'
+    required: false
+    default: 'soft,nolock'
+  mount_type:
+    description: '-t option'
+    required: false
+    default: 'nfs4'
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        apt-get update && apt-get install -y nfs-common
+        mkdir -p ${{ inputs.dest_dir }}
+        mount -t ${{ inputs.mount_type }} -o ${{ inputs.mount_options }} ${{ inputs.source_dir }} ${{ inputs.dest_dir }}
