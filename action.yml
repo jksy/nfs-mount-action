@@ -16,11 +16,21 @@ inputs:
     description: '-t option'
     required: false
     default: 'nfs4'
+  sudo:
+    description: 'describe true if sudo is enabled at each command lines'
+    required: false
+    default: false
 runs:
   using: "composite"
   steps:
     - shell: bash
       run: |
-        apt-get update && apt-get install -y nfs-common
-        mkdir -p ${{ inputs.dest_dir }}
-        mount -t ${{ inputs.mount_type }} -o ${{ inputs.mount_options }} ${{ inputs.source_dir }} ${{ inputs.dest_dir }}
+        set -xe
+
+        export $SUDO
+        if [ ${{ inputs.sudo }} != 'false' ]; then
+          $SUDO=sudo
+        fi
+        $sudo apt-get update && apt-get install -y nfs-common
+        $sudo mkdir -p ${{ inputs.dest_dir }}
+        $sudo mount -t ${{ inputs.mount_type }} -o ${{ inputs.mount_options }} ${{ inputs.source_dir }} ${{ inputs.dest_dir }}
